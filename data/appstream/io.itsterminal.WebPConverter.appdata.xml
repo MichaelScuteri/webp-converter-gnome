@@ -26,12 +26,13 @@
   <screenshots>
     <screenshot type="default">
         <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/caf9631c6451fcfb216e30675dbd07aa364aa7f5/screenshots/webp-converter.png</image>
+        <caption>Upload and set compression qaulity</caption>
     </screenshot>
   </screenshots>
   <releases>
-    <release version="1.0.1" date="2024-10-14">
+    <release version="1.0.0" date="2024-10-14">
         <description>
-            <p>Version 1.0.1</p>
+            <p>Version 1.0.0</p>
         </description>
         </release>
   </releases>
