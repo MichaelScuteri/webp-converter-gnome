@@ -6,6 +6,10 @@ An easy and quick tool with a simple GUI to convert images of various format to 
 - Set the qaulity level of the compression with an easy slider
 - Easily select your output directory
 
+<center>
+<img src="screenshots/webp-converter.png" height="400">
+</center>
+
 ## Building From Source
 A pull request has been submitted to get this app on FlatHub, although in the meantime you can build from source.
 
