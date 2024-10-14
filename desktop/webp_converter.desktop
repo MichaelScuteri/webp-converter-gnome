@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=WebP Converter
-Exec=flatpak run com.example.WebPConverter
+Exec=io.itsterminal.WebPConverter
 Icon=com.example.WebPConverter
 Type=Application
 Categories=Graphics;
