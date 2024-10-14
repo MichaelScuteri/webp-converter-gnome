@@ -303,7 +303,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
 class WebPConverterApp(Gtk.Application):
     def __init__(self):
-        super().__init__(application_id='com.example.WebPConverter')
+        super().__init__(application_id='io.itsterminal.WebPConverter')
 
     def do_activate(self):
         win = WebPConverterWindow(self)
