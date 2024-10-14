@@ -1,0 +1,17 @@
+<component type="desktop">
+  <id>io.itsterminal.WebPConverter</id>
+  <name>WebP Converter</name>
+  <summary>A simple tool to convert images to WebP format</summary>
+  <description>
+    <p>
+      WebP Converter allows you to quickly convert images to WebP format, while allowing you to choose the compression qaulity.
+    </p>
+  </description>
+  <launchable type="desktop-id">io.itsterminal.WebPConverter.desktop</launchable>
+  <provides>
+    <binary>webp_converter</binary>
+  </provides>
+  <url type="homepage">https://github.com/MichaelScuteri/webp-converter-gnome</url>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+</component>
