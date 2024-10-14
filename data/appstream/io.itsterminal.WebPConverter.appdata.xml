@@ -2,7 +2,7 @@
 <!-- Copyright [2024] [Michael Scuteri] -->
 <component type="desktop-application">
   <id>io.itsterminal.WebPConverter</id>
-  <project_license>GPL-3.0-only</project_license>
+  <project_license>GPL-3.0</project_license>
   <name>WebP Converter</name>
   <summary>A tool to convert images to WebP format.</summary>
   <developer id="io.itsterminal">
