@@ -8,33 +8,26 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, GLib, Gdk
 import threading
 
-# Supported image extensions
 extensions = (".png", ".jpg", ".jpeg", ".tiff")
 
-# Global variables to store selected images
 selected_images = []
 
-# Path to cwebp executable
-libwebp = "cwebp"  # Assuming cwebp is in your PATH
+libwebp = "cwebp"  
 
-# GTK Application Window
 class WebPConverterWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
         super().__init__(application=app)
         self.set_title("WebP Converter")
         self.set_default_size(400, 500)
-        self.set_resizable(False)  # Make the window not resizable
+        self.set_resizable(False)
 
-        # Get user's Pictures directory
         self.output_dir = os.path.join(os.path.expanduser("~"), "Pictures")
-        # Create the Pictures directory if it doesn't exist
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
-        # Flag to track if images are selected
         self.images_selected = False
 
-        # CSS Provider for custom styles
+        #CSS custom styles
         css_provider = Gtk.CssProvider()
         css_provider.load_from_data(b'''
             button {
@@ -52,7 +45,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-        # Main vertical box container
+        #main vertical box container
         main_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
         main_vbox.set_margin_top(20)
         main_vbox.set_margin_bottom(20)
@@ -60,11 +53,11 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         main_vbox.set_margin_end(20)
         self.set_child(main_vbox)
 
-        # Group 1: Select Images to Convert
+        #group 1: select Images to Convert
         images_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         images_group.set_hexpand(True)
 
-        # Button to select images or cancel selection
+        #button to select images or cancel
         self.select_images_button = Gtk.Button(label="Select Images")
         self.select_images_button.set_halign(Gtk.Align.CENTER)
         self.select_images_button.set_hexpand(False)
@@ -73,7 +66,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.select_images_button.connect("clicked", self.on_select_images_clicked)
         images_group.append(self.select_images_button)
 
-        # Label to show selected images
+        #label for selected images
         self.selected_images_label = Gtk.Label(label="No images selected.")
         self.selected_images_label.set_xalign(0.5)  # Center align the text
         self.selected_images_label.set_wrap(True)
@@ -84,11 +77,11 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         main_vbox.append(images_group)
 
-        # Group 2: Select Output Directory
+        #group 2: select output directory
         output_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         output_group.set_hexpand(True)
 
-        # Button to select output directory
+        #button for output directory
         self.select_output_button = Gtk.Button(label="Output Directory")
         self.select_output_button.set_halign(Gtk.Align.CENTER)
         self.select_output_button.set_hexpand(False)
@@ -97,7 +90,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.select_output_button.connect("clicked", self.on_select_output_clicked)
         output_group.append(self.select_output_button)
 
-        # Label to show selected output directory
+        #label for selected output directory
         self.output_dir_label = Gtk.Label(label=f"Output Directory: {self.output_dir}")
         self.output_dir_label.set_xalign(0.5)
         self.output_dir_label.set_wrap(True)
@@ -108,17 +101,17 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         main_vbox.append(output_group)
 
-        # Group 3: Image Quality
+        #group 3: image Quality
         quality_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         quality_group.set_hexpand(True)
 
-        # Label for image quality
+        #label for image quality
         self.label = Gtk.Label(label="Select Image Quality (1-100):")
         self.label.set_xalign(0.5)
         self.label.set_margin_top(20)
         quality_group.append(self.label)
 
-        # Quality input (scale)
+        #quality input
         self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 100, 1)
         self.scale.set_value(75)
         self.scale.set_digits(0)
@@ -127,18 +120,18 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.scale.get_style_context().add_class('wide-widget')
         quality_group.append(self.scale)
 
-        # Label to show current quality
+        #label for current quality
         self.quality_label = Gtk.Label(label=f"Current Quality: {int(self.scale.get_value())}")
         self.quality_label.set_xalign(0.5)
         quality_group.append(self.quality_label)
 
         main_vbox.append(quality_group)
 
-        # Group 4: Convert Images and Progress Bar
+        #group 4: convert images and progress
         convert_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         convert_group.set_hexpand(True)
 
-        # Convert button
+        #convert button
         self.button = Gtk.Button(label="Convert Images")
         self.button.set_halign(Gtk.Align.CENTER)
         self.button.set_hexpand(False)
@@ -147,7 +140,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.button.connect("clicked", self.on_convert_clicked)
         convert_group.append(self.button)
 
-        # Progress bar
+        #progress bar
         self.progress_bar = Gtk.ProgressBar()
         self.progress_bar.set_hexpand(True)
         self.progress_bar.set_vexpand(False)
@@ -155,7 +148,6 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.progress_bar.set_margin_bottom(0)  # Less bottom margin
         self.progress_bar.get_style_context().add_class('wide-widget')
 
-        # Apply CSS to increase the height of the progress bar
         css_provider_pb = Gtk.CssProvider()
         css_provider_pb.load_from_data(b'''
             progressbar {
@@ -169,26 +161,23 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         main_vbox.append(convert_group)
 
-        # Output Label
+        #output
         self.output_label = Gtk.Label(label="")
         self.output_label.set_xalign(0.5)
         self.output_label.set_margin_top(10)
         main_vbox.append(self.output_label)
 
-        # Reference to dialogs and failed images
         self.dialog = None
         self.failed_images = []
 
     def on_select_images_clicked(self, widget):
         if self.images_selected:
-            # If images are already selected, clicking the button will clear the selection
             global selected_images
             selected_images = []
             self.selected_images_label.set_text("No images selected.")
             self.select_images_button.set_label("Select Images")
             self.images_selected = False
         else:
-            # Open file chooser to select images
             self.dialog = Gtk.FileChooserNative(
                 title="Select Images",
                 transient_for=self,
@@ -223,7 +212,6 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
                 self.select_images_button.set_label("Select Images")
                 self.images_selected = False
         else:
-            # If the user cancels the file chooser dialog
             if not selected_images:
                 self.selected_images_label.set_text("No images selected.")
                 self.select_images_button.set_label("Select Images")
@@ -263,7 +251,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         if selected_images:
             self.failed_images = []
-            self.button.set_sensitive(False)  # Disable the button
+            self.button.set_sensitive(False)
             self.progress_bar.set_fraction(0.0)
             self.progress_bar.set_text("Starting conversion...")
             threading.Thread(target=self.convert_images, args=(selected_images.copy(), quality, output_dir)).start()
@@ -287,11 +275,9 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             except Exception as e:
                 print(e)
                 self.failed_images.append(image_name)
-            # Update progress bar
             fraction = (index + 1) / total_images
             GLib.idle_add(self.progress_bar.set_fraction, fraction)
             GLib.idle_add(self.progress_bar.set_text, f"Converting... {int(fraction * 100)}%")
-        # Conversion complete
         GLib.idle_add(self.conversion_complete)
 
     def conversion_complete(self):
@@ -313,11 +299,8 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             dialog.show()
         self.progress_bar.set_fraction(1.0)
         self.progress_bar.set_text("Conversion complete.")
-        self.button.set_sensitive(True)  # Re-enable the button
+        self.button.set_sensitive(True)
 
-    # Rest of the code remains the same
-
-# GTK Application
 class WebPConverterApp(Gtk.Application):
     def __init__(self):
         super().__init__(application_id='com.example.WebPConverter')
