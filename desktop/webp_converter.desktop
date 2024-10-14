@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=WebP Converter
 Exec=io.itsterminal.WebPConverter
-Icon=com.example.WebPConverter
+Icon=io.itsterminal.WebPConverter
 Type=Application
 Categories=Graphics;
 

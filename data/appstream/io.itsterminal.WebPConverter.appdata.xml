@@ -17,7 +17,6 @@
     <category>Graphics</category>
     <category>Utility</category>
   </categories>
-  <icon type="stock">io.itsterminal.WebPConverter</icon>
   <branding>
     <color type="primary" scheme_preference="light">#ffffff</color>
     <color type="primary" scheme_preference="dark">#0c247a</color>
@@ -30,9 +29,9 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="1.0.0" date="2024-10-14">
+    <release version="1.0.1" date="2024-10-14">
         <description>
-            <p>Version 1.0.0</p>
+            <p>Version 1.0.1</p>
         </description>
         </release>
   </releases>
