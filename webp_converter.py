@@ -19,7 +19,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         super().__init__(application=app)
         self.set_title("WebP Converter")
         self.set_default_size(400, 500)
-        self.set_resizable(False)
+        self.set_resizable(True)
 
         try:
             self.output_dir = subprocess.check_output(["xdg-user-dir", "PICTURES"]).decode("utf-8").strip()
