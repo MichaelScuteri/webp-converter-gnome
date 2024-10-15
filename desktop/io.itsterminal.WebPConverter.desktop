@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=WebP Converter
-Exec=webp-converter
+Exec=webp_converter.py
 Icon=io.itsterminal.WebPConverter
 Type=Application
 Categories=Graphics;
