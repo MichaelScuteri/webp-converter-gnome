@@ -21,9 +21,12 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.set_default_size(400, 500)
         self.set_resizable(False)
 
-        self.output_dir = os.path.join(os.path.expanduser("~"), "Pictures")
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
+        try:
+            self.output_dir = subprocess.check_output(["xdg-user-dir", "PICTURES"]).decode("utf-8").strip()
+            if not os.path.exists(self.output_dir):
+                os.makedirs(self.output_dir)
+        except Exception as e:
+            self.output_dir = os.path.expanduser("~/Pictures")
 
         self.images_selected = False
 
