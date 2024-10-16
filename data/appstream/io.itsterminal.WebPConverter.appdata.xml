@@ -22,7 +22,9 @@
     <color type="primary" scheme_preference="dark">#0c247a</color>
   </branding>
   <content_rating type="oars-1.1" />
-  <url type="homepage">https://itsterminal.io/</url>
+  <url type="homepage">https://github.com/flathub/io.itsterminal.WebPConverter</url>
+  <url type="bugtracker">https://github.com/flathub/io.itsterminal.WebPConverter/issues</url>
+  <url type="vcs-browser">https://github.com/MichaelScuteri/webp-converter-gnome</url>
   <screenshots>
     <screenshot type="default">
         <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/caf9631c6451fcfb216e30675dbd07aa364aa7f5/screenshots/webp-converter.png</image>
