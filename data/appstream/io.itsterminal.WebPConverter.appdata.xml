@@ -5,12 +5,13 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
   <name>WebP Converter</name>
-  <summary>A tool to convert images to WebP format.</summary>
+  <summary>A simple and minimal tool to convert images to WebP format fast.</summary>
   <developer id="io.itsterminal">
     <name>Michael Scuteri</name>
   </developer>
   <description>
-    <p>WebP Converter allows you to convert images to the WebP format, while allowing you to control the compression qaulity</p>
+    <p>WebP Converter allows you to convert images to the WebP format. It is on average 93% faster than online alternatives, with no limit on amount of converts and ability to control compression qaulity.</p>
+    <p>With a compression setting of 60, you will notice minimal reduction in qaulity while shrinking file size to around 90% of its original size.</p>
   </description>
   <launchable type="desktop-id">io.itsterminal.WebPConverter.desktop</launchable>
   <categories>
@@ -28,7 +29,7 @@
   <screenshots>
     <screenshot type="default">
         <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/caf9631c6451fcfb216e30675dbd07aa364aa7f5/screenshots/webp-converter.png</image>
-        <caption>Upload and set compression qaulity</caption>
+        <caption>Select images, qaulity and convert in one view</caption>
     </screenshot>
   </screenshots>
   <releases>
