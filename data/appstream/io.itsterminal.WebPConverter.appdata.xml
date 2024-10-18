@@ -5,7 +5,7 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
   <name>WebP Converter</name>
-  <summary>A simple and minimal tool to convert images to WebP format fast.</summary>
+  <summary>The fastest way to convert images to WebP</summary>
   <developer id="io.itsterminal">
     <name>Michael Scuteri</name>
   </developer>
