@@ -60,6 +60,10 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         images_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         images_group.set_hexpand(True)
 
+        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        button_box.set_halign(Gtk.Align.CENTER)
+        button_box.set_hexpand(False)
+
         #button to select images
         self.select_images_button = Gtk.Button(label="Select Images")
         self.select_images_button.set_halign(Gtk.Align.CENTER)
@@ -67,7 +71,6 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.select_images_button.set_vexpand(False)
         self.select_images_button.set_margin_top(10)
         self.select_images_button.connect("clicked", self.on_select_images_clicked)
-        images_group.append(self.select_images_button)
 
         #button to cancel selected images
         self.cancel_button = Gtk.Button(label="Cancel")
@@ -76,9 +79,13 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.cancel_button.set_vexpand(False)
         self.cancel_button.set_margin_top(10)
         self.cancel_button.connect("clicked", self.on_cancel_clicked)
-        self.cancel_button.set_sensitive(False) 
-        images_group.append(self.cancel_button)
+        self.cancel_button.hide()
 
+        button_box.append(self.select_images_button)
+        button_box.append(self.cancel_button)
+
+        images_group.append(button_box)
+        
         #label for selected images
         self.selected_images_label = Gtk.Label(label="No images selected.")
         self.selected_images_label.set_xalign(0.5)  # Center align the text
@@ -104,7 +111,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         output_group.append(self.select_output_button)
 
         #label for selected output directory
-        self.output_dir_label = Gtk.Label(label=f"Output Directory: {self.output_dir}")
+        self.output_dir_label = Gtk.Label(label={self.output_dir})
         self.output_dir_label.set_xalign(0.5)
         self.output_dir_label.set_wrap(True)
         self.output_dir_label.set_max_width_chars(50)
@@ -211,10 +218,10 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
                 filenames = [os.path.basename(f) for f in selected_images]
                 filenames_text = ", ".join(filenames)
                 self.selected_images_label.set_text(filenames_text)
-                self.cancel_button.set_sensitive(True)
+                self.cancel_button.show()
             else:
                 self.selected_images_label.set_text("No images selected.")
-                self.cancel_button.set_sensitive(False)
+                self.cancel_button.hide()
         dialog.destroy()
         self.dialog = None
 
@@ -222,7 +229,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         global selected_images
         selected_images = [] 
         self.selected_images_label.set_text("No images selected.")
-        self.cancel_button.set_sensitive(False)
+        self.cancel_button.hide()
 
     def on_select_output_clicked(self, widget):
         self.dialog = Gtk.FileChooserNative(
