@@ -10,7 +10,7 @@
     <name>Michael Scuteri</name>
   </developer>
   <description>
-    <p>WebP Converter allows you to convert images to the WebP format. It is on average 93% faster than online alternatives, with no limit on amount of converts and ability to control compression qaulity.</p>
+    <p>WebP Converter allows you to convert images to the WebP format. It is on average 93% faster than online alternatives, with no limit on amount of converts and ability to control compression quality.</p>
     <p>With a compression setting of 60, you will notice minimal reduction in qaulity while shrinking file size to around 90% of its original size.</p>
   </description>
   <launchable type="desktop-id">io.itsterminal.WebPConverter.desktop</launchable>
@@ -18,9 +18,15 @@
     <category>Graphics</category>
     <category>Utility</category>
   </categories>
+  <keywords>
+    <keyword>convert</keyword>
+    <keyword>images</keyword>
+    <keyword>web</keyword>
+    <keyword>development</keyword>
+  </keywords>
   <branding>
-    <color type="primary" scheme_preference="light">#ffffff</color>
-    <color type="primary" scheme_preference="dark">#0c247a</color>
+    <color type="primary" scheme_preference="light">ffff80</color>
+    <color type="primary" scheme_preference="dark">#000040</color>
   </branding>
   <content_rating type="oars-1.1" />
   <url type="homepage">https://github.com/flathub/io.itsterminal.WebPConverter</url>

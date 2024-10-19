@@ -56,11 +56,11 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         main_vbox.set_margin_end(20)
         self.set_child(main_vbox)
 
-        #group 1: select Images to Convert
+        #group 1: select images to convert or cancel selection
         images_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         images_group.set_hexpand(True)
 
-        #button to select images or cancel
+        #button to select images
         self.select_images_button = Gtk.Button(label="Select Images")
         self.select_images_button.set_halign(Gtk.Align.CENTER)
         self.select_images_button.set_hexpand(False)
@@ -68,6 +68,16 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.select_images_button.set_margin_top(10)
         self.select_images_button.connect("clicked", self.on_select_images_clicked)
         images_group.append(self.select_images_button)
+
+        #button to cancel selected images
+        self.cancel_button = Gtk.Button(label="Cancel")
+        self.cancel_button.set_halign(Gtk.Align.CENTER)
+        self.cancel_button.set_hexpand(False)
+        self.cancel_button.set_vexpand(False)
+        self.cancel_button.set_margin_top(10)
+        self.cancel_button.connect("clicked", self.on_cancel_clicked)
+        self.cancel_button.set_sensitive(False) 
+        images_group.append(self.cancel_button)
 
         #label for selected images
         self.selected_images_label = Gtk.Label(label="No images selected.")
@@ -130,7 +140,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         main_vbox.append(quality_group)
 
-        #group 4: convert images and progress
+        #group 4: convert button and progress
         convert_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         convert_group.set_hexpand(True)
 
@@ -174,53 +184,45 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.failed_images = []
 
     def on_select_images_clicked(self, widget):
-        if self.images_selected:
-            global selected_images
-            selected_images = []
-            self.selected_images_label.set_text("No images selected.")
-            self.select_images_button.set_label("Select Images")
-            self.images_selected = False
-        else:
-            self.dialog = Gtk.FileChooserNative(
-                title="Select Images",
-                transient_for=self,
-                action=Gtk.FileChooserAction.OPEN,
-                accept_label="Select",
-                cancel_label="Cancel"
-            )
-            self.dialog.set_select_multiple(True)
-            filter_images = Gtk.FileFilter()
-            filter_images.set_name("Image files")
-            for ext in extensions:
-                filter_images.add_pattern(f"*{ext}")
-            self.dialog.add_filter(filter_images)
+        self.dialog = Gtk.FileChooserNative(
+            title="Select Images",
+            transient_for=self,
+            action=Gtk.FileChooserAction.OPEN,
+            accept_label="Select",
+            cancel_label="Cancel"
+        )
+        self.dialog.set_select_multiple(True)
+        filter_images = Gtk.FileFilter()
+        filter_images.set_name("Image files")
+        for ext in extensions:
+            filter_images.add_pattern(f"*{ext}")
+        self.dialog.add_filter(filter_images)
 
-            self.dialog.connect("response", self.on_file_dialog_response)
-            self.dialog.show()
+        self.dialog.connect("response", self.on_file_dialog_response)
+        self.dialog.show()
 
     def on_file_dialog_response(self, dialog, response):
         if response == Gtk.ResponseType.ACCEPT:
             files = dialog.get_files()
-            selected_files = [f.get_path() for f in files]
+            new_selected_files = [f.get_path() for f in files]
             global selected_images
-            selected_images = selected_files
+            selected_images.extend(new_selected_files)
             if selected_images:
                 filenames = [os.path.basename(f) for f in selected_images]
                 filenames_text = ", ".join(filenames)
                 self.selected_images_label.set_text(filenames_text)
-                self.select_images_button.set_label("Cancel")
-                self.images_selected = True
+                self.cancel_button.set_sensitive(True)
             else:
                 self.selected_images_label.set_text("No images selected.")
-                self.select_images_button.set_label("Select Images")
-                self.images_selected = False
-        else:
-            if not selected_images:
-                self.selected_images_label.set_text("No images selected.")
-                self.select_images_button.set_label("Select Images")
-                self.images_selected = False
+                self.cancel_button.set_sensitive(False)
         dialog.destroy()
         self.dialog = None
+
+    def on_cancel_clicked(self, widget):
+        global selected_images
+        selected_images = [] 
+        self.selected_images_label.set_text("No images selected.")
+        self.cancel_button.set_sensitive(False)
 
     def on_select_output_clicked(self, widget):
         self.dialog = Gtk.FileChooserNative(
@@ -238,7 +240,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         if response == Gtk.ResponseType.ACCEPT:
             folder = dialog.get_file()
             self.output_dir = folder.get_path()
-            self.output_dir_label.set_text(f"Output Directory: {self.output_dir}")
+            self.output_dir_label.set_text(self.output_dir)
         dialog.destroy()
         self.dialog = None
 
