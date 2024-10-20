@@ -13,6 +13,20 @@
   ],
   "modules": [
     {
+      "name": "libadwaita",
+      "buildsystem": "meson",
+      "config-opts": [
+        "-Dexamples=false"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://gitlab.gnome.org/GNOME/libadwaita.git",
+          "tag": "1.2.0"
+        }
+      ]
+    },
+    {
       "name": "webp_converter",
       "buildsystem": "simple",
       "build-commands": [
@@ -25,11 +39,10 @@
         {
           "type": "git",
           "url": "https://github.com/MichaelScuteri/webp-converter-gnome.git",
-          "tag": "v1.1.2",    
+          "tag": "v1.1.2",
           "commit": "c6c0087eb6cf7350607c947211f1583b4b531073"
         }
       ]
     }
   ]
 }
-

@@ -30,24 +30,6 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         self.images_selected = False
 
-        #CSS custom styles
-        css_provider = Gtk.CssProvider()
-        css_provider.load_from_data(b'''
-            button {
-                padding: 5px 10px;
-                border: none;
-            }
-            .wrap-label {
-                max-width: 350px;
-            }
-            .wide-widget {
-                max-width: 200px;
-            }
-        ''')
-        Gtk.StyleContext.add_provider_for_display(
-            Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-        )
-
         #main vertical box container
         main_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
         main_vbox.set_margin_top(20)
@@ -111,7 +93,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         output_group.append(self.select_output_button)
 
         #label for selected output directory
-        self.output_dir_label = Gtk.Label(label={self.output_dir})
+        self.output_dir_label = Gtk.Label(label=(f"{self.output_dir}"))
         self.output_dir_label.set_xalign(0.5)
         self.output_dir_label.set_wrap(True)
         self.output_dir_label.set_max_width_chars(50)
@@ -167,15 +149,6 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.progress_bar.set_margin_top(20)  # More top margin from the button
         self.progress_bar.set_margin_bottom(0)  # Less bottom margin
         self.progress_bar.get_style_context().add_class('wide-widget')
-
-        css_provider_pb = Gtk.CssProvider()
-        css_provider_pb.load_from_data(b'''
-            progressbar {
-                min-height: 20px;
-            }
-        ''')
-        style_context = self.progress_bar.get_style_context()
-        style_context.add_provider(css_provider_pb, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         convert_group.append(self.progress_bar)
 
