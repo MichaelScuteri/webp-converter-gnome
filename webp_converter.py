@@ -4,8 +4,9 @@ import os
 import subprocess
 import sys
 import gi
-gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk, GLib, Gdk
+gi.require_version('Gtk', '4.0')
+gi.require_version('Adw', '1')
+from gi.repository import Gtk, GLib, Adw, Gdk
 import threading
 
 extensions = (".png", ".jpg", ".jpeg", ".tiff")
@@ -29,6 +30,16 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             self.output_dir = os.path.expanduser("~/Pictures")
 
         self.images_selected = False
+
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_data(b'''
+            .progress-bar {
+                min-vertical-bar-height: 350px;
+            }
+        ''')
+        Gtk.StyleContext.add_provider_for_display(
+            Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
 
         #main vertical box container
         main_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
@@ -146,9 +157,9 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.progress_bar = Gtk.ProgressBar()
         self.progress_bar.set_hexpand(True)
         self.progress_bar.set_vexpand(False)
-        self.progress_bar.set_margin_top(20)  # More top margin from the button
-        self.progress_bar.set_margin_bottom(0)  # Less bottom margin
-        self.progress_bar.get_style_context().add_class('wide-widget')
+        self.progress_bar.set_margin_top(20)
+        self.progress_bar.set_margin_bottom(0)
+        self.progress_bar.get_style_context().add_class('progress-bar')
 
         convert_group.append(self.progress_bar)
 
@@ -286,7 +297,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.progress_bar.set_text("Conversion complete.")
         self.button.set_sensitive(True)
 
-class WebPConverterApp(Gtk.Application):
+class WebPConverterApp(Adw.Application):
     def __init__(self):
         super().__init__(application_id='io.itsterminal.WebPConverter')
 
