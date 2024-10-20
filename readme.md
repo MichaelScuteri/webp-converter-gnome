@@ -1,5 +1,5 @@
 ## WebP Converter
-An easy and quick tool with a simple GUI to convert images of various format to .webp. This tool was designed for web developers to have a fast an easy way to convert images locally for faster web loading of images. 
+An easy and quick tool with a simple Linux GUI to convert images of various format to .webp. This tool was designed for web developers to have a fast an easy way to convert images locally for faster web loading of images. It is available on [Flathub](https://flathub.org/apps/io.itsterminal.WebPConverter) as a Flatpak.
 
 ## Features
 - Convert as many images as you like at once
@@ -10,9 +10,14 @@ An easy and quick tool with a simple GUI to convert images of various format to 
     <img src="screenshots/webp-converter.png" height="400">
 </p>
 
-## Building From Source
-A pull request has been submitted to get this app on FlatHub, although in the meantime you can build from source.
+## Non-Flatpak Use (python only)
+If you dont want to install the Flatpak from [Flathub](https://flathub.org/apps/io.itsterminal.WebPConverter) you can simply only download the webp_converter.py file and run it using python only.
 
+```python
+python3 webp_converter.py
+```
+
+## Building From Source (As a Flatpak)
 To build this app from source, you'll need the following:
 
 - [Flatpak](https://flatpak.org/setup/) installed on your system
