@@ -34,15 +34,22 @@
   <url type="vcs-browser">https://github.com/MichaelScuteri/webp-converter-gnome</url>
   <screenshots>
     <screenshot type="default">
-        <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/406bdf4708fb6f87c39f37ff359bc135d6a203cf/screenshots/webp-converter.png</image>
-        <caption>Select images, qaulity and convert in one view</caption>
+        <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/0285da2ae6bdf09521e8dadf14346af7b517568d/screenshots/webp-converter.png</image>
+        <caption>Main view light mode</caption>
+        <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/0285da2ae6bdf09521e8dadf14346af7b517568d/screenshots/webp-converter-dark.png</image>
+        <caption>Main view dark mode</caption>
     </screenshot>
   </screenshots>
   <releases>
-    <release version="1.0.0" date="2024-10-14">
-        <description>
-            <p>Version 1.0.5</p>
+    <release version="1.0.5" date="2024-10-20">
+        <description type="html">
+            <ul>
+              <li>Allow more photos to be added once initial photos have been added (without losing current selection)</li>
+              <li>The 'Select Images' button no longer hides after initial selection</li>
+              <li>Added Adawaita support (App now respects system preference)</li>
+              <li>New screenshots to reflect changes</li>
+            </ul>
         </description>
-        </release>
+      </release>
   </releases>
 </component>
