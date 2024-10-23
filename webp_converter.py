@@ -6,7 +6,7 @@ import sys
 import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
-from gi.repository import Gtk, GLib, Adw, Gdk
+from gi.repository import Gtk, GLib, Adw, Gdk, GdkPixbuf
 import threading
 
 extensions = (".png", ".jpg", ".jpeg", ".tiff")
@@ -22,6 +22,80 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.set_default_size(400, 500)
         self.set_resizable(True)
 
+        css = b"""
+        .button {
+            background-color: #3584E4;
+        }   
+
+        .splash-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        """
+
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_data(css)
+        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+        #stack to switch between pages
+        self.stack = Gtk.Stack()
+        self.set_child(self.stack)
+
+        self.add_splash_screen()
+        self.add_main_view()
+
+        self.stack.set_visible_child_name("splash_screen")
+
+    def add_splash_screen(self):
+        parent_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=45)
+        parent_box.set_valign(Gtk.Align.CENTER) 
+        parent_box.set_halign(Gtk.Align.CENTER) 
+        parent_box.set_vexpand(True)  
+
+        splash_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        splash_box.set_valign(Gtk.Align.CENTER) 
+        splash_box.set_halign(Gtk.Align.CENTER) 
+        splash_box.set_vexpand(False)  
+
+        button_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        button_box.set_valign(Gtk.Align.CENTER) 
+        button_box.set_halign(Gtk.Align.CENTER)  
+        button_box.set_vexpand(False)  
+
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename="data/icons/io.itsterminal.WebPConverter.svg", 
+            width=128, height=128, 
+            preserve_aspect_ratio=True
+        )
+        image = Gtk.Image.new_from_pixbuf(pixbuf)
+        image.set_size_request(100, 100)
+
+        title_label = Gtk.Label(label="WebP Converter")
+        title_label.set_xalign(0.5) 
+        title_label.get_style_context().add_class("splash-title")
+        summary_label = Gtk.Label(label="The fastest way to convert to WebP")
+        summary_label.set_xalign(0.5)  
+
+        start_button = Gtk.Button(label="Select Images")
+        start_button.set_hexpand(False)  
+        start_button.set_margin_start(50) 
+        start_button.set_margin_end(50)  
+        start_button.get_style_context().add_class("button")
+        start_button.connect("clicked", self.on_select_images_clicked)
+
+        splash_box.append(image)
+        splash_box.append(title_label)
+        splash_box.append(summary_label)
+
+        button_box.append(start_button)
+
+        parent_box.append(splash_box)
+        parent_box.append(button_box)
+
+        # Add parent_box to the stack
+        self.stack.add_named(parent_box, "splash_screen")
+
+    def add_main_view(self):
         try:
             self.output_dir = subprocess.check_output(["xdg-user-dir", "PICTURES"]).decode("utf-8").strip()
             if not os.path.exists(self.output_dir):
@@ -31,17 +105,12 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         self.images_selected = False
 
-        css_provider = Gtk.CssProvider()
-        css_provider.load_from_path('styles.css')
-        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-
         #main vertical box container
         main_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
         main_vbox.set_margin_top(20)
         main_vbox.set_margin_bottom(20)
         main_vbox.set_margin_start(20)
         main_vbox.set_margin_end(20)
-        self.set_child(main_vbox)
 
         #group 1: select images and cancel selection
         images_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
@@ -164,6 +233,8 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.output_label.set_margin_top(10)
         main_vbox.append(self.output_label)
 
+        self.stack.add_named(main_vbox, "main_view")
+
         self.dialog = None
         self.failed_images = []
 
@@ -186,6 +257,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.dialog.show()
 
     def on_file_dialog_response(self, dialog, response):
+        self.stack.set_visible_child_name("main_view")
         if response == Gtk.ResponseType.ACCEPT:
             files = dialog.get_files()
             new_selected_files = [f.get_path() for f in files]
