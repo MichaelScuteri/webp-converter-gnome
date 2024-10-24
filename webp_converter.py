@@ -19,17 +19,19 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
         super().__init__(application=app)
         self.set_title("WebP Converter")
-        self.set_default_size(400, 500)
+        self.set_default_size(380, 500)
         self.set_resizable(True)
 
         css = b"""
         .button {
             background-color: #3584E4;
+            font-weight: 800;
+            border-radius: 16px;
         }   
 
         .splash-title {
             font-size: 24px;
-            font-weight: bold;
+            font-weight: 800;
         }
         """
 
@@ -64,7 +66,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
             filename="data/icons/io.itsterminal.WebPConverter.svg", 
-            width=128, height=128, 
+            width=100, height=100, 
             preserve_aspect_ratio=True
         )
         image = Gtk.Image.new_from_pixbuf(pixbuf)
@@ -107,10 +109,10 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         #main vertical box container
         main_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        main_vbox.set_valign(Gtk.Align.CENTER) 
+        main_vbox.set_halign(Gtk.Align.CENTER) 
         main_vbox.set_margin_top(20)
         main_vbox.set_margin_bottom(20)
-        main_vbox.set_margin_start(20)
-        main_vbox.set_margin_end(20)
 
         #group 1: select images and cancel selection
         images_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
