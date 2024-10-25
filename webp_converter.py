@@ -33,10 +33,6 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             font-size: 24px;
             font-weight: 800;
         }
-
-        .bars {
-            min-width: 300px;
-        }
         """
 
         css_provider = Gtk.CssProvider()
@@ -116,8 +112,8 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         main_vbox.set_valign(Gtk.Align.CENTER) 
         main_vbox.set_halign(Gtk.Align.CENTER) 
         main_vbox.set_margin_top(20)
-        main_vbox.set_margin_start(20)
-        main_vbox.set_margin_end(20)
+        main_vbox.set_margin_start(25)
+        main_vbox.set_margin_end(25)
         main_vbox.set_margin_bottom(20)
 
         #group 1: select images and cancel selection
@@ -186,6 +182,9 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         #group 3: image Quality
         quality_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         quality_group.set_hexpand(True)
+        quality_group.set_margin_start(25)
+        quality_group.set_margin_end(25)
+
 
         #label for image quality
         self.label = Gtk.Label(label="Select Image Quality (1-100):")
@@ -211,6 +210,8 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         #group 4: convert button and progress
         convert_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        convert_group.set_margin_start(35)
+        convert_group.set_margin_end(35)
         convert_group.set_hexpand(True)
 
         #convert button
