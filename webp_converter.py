@@ -33,6 +33,10 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             font-size: 24px;
             font-weight: 800;
         }
+
+        .bars {
+            min-width: 300px;
+        }
         """
 
         css_provider = Gtk.CssProvider()
@@ -192,6 +196,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.scale.set_value(75)
         self.scale.set_digits(0)
         self.scale.set_hexpand(True)
+        self.scale.set_size_request(275, -1)
         self.scale.connect("value-changed", self.on_scale_value_changed)
         quality_group.append(self.scale)
 
@@ -216,23 +221,23 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.button.set_sensitive(False) 
         convert_group.append(self.button)
 
-        #progress bar
+        #progress bar (set opacity to 0 to hide but keep space)
         self.progress_bar = Gtk.ProgressBar()
         self.progress_bar.set_hexpand(True)
         self.progress_bar.set_vexpand(False)
         self.progress_bar.set_margin_top(20)
         self.progress_bar.set_margin_bottom(0)
-        self.progress_bar.get_style_context().add_class('progress-bar')
-        self.progress_bar.hide()
-
+        self.progress_bar.set_fraction(0.0)
+        self.progress_bar.set_text("")  
+        self.progress_bar.set_opacity(0)  
         convert_group.append(self.progress_bar)
 
         main_vbox.append(convert_group)
 
-        #output
+        #output label (keep it empty but visible initially)
         self.output_label = Gtk.Label(label="")
         self.output_label.set_xalign(0.5)
-        self.output_label.set_margin_top(10)
+        self.output_label.set_margin_top(0)
         main_vbox.append(self.output_label)
 
         self.stack.add_named(main_vbox, "main_view")
@@ -272,8 +277,10 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
                 self.cancel_button.show()
                 self.button.set_css_classes(['button'])
                 self.button.set_sensitive(True)
-                self.progress_bar.hide()
-                self.output_label.hide()
+                self.progress_bar.set_opacity(0)  
+                self.progress_bar.set_fraction(0.0)
+                self.progress_bar.set_text("")  
+                self.output_label.set_text("")  
             else:
                 self.selected_images_label.set_text("No images selected.")
                 self.cancel_button.hide()
@@ -284,11 +291,12 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         global selected_images
         selected_images = [] 
         self.selected_images_label.set_text("No images selected.")
-        self.cancel_button.hide()
         self.button.get_style_context().remove_class("button")
         self.button.set_sensitive(False)
-        self.progress_bar.hide()
-        self.output_label.hide()
+        self.progress_bar.set_opacity(0)
+        self.progress_bar.set_fraction(0.0)
+        self.progress_bar.set_text("")  
+        self.output_label.set_text("")  
 
     def on_select_output_clicked(self, widget):
         self.dialog = Gtk.FileChooserNative(
@@ -324,10 +332,10 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             self.failed_images = []
             self.button.get_style_context().remove_class("button")
             self.button.set_sensitive(False)
-            self.progress_bar.show()
-            self.output_label.show()
+            self.progress_bar.set_opacity(1)  
             self.progress_bar.set_fraction(0.0)
             self.progress_bar.set_text("Starting conversion...")
+            self.output_label.set_text("")
             threading.Thread(target=self.convert_images, args=(selected_images.copy(), quality, output_dir)).start()
 
     def convert_images(self, images, quality, output_dir):
@@ -356,7 +364,6 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         total_images = len(selected_images)
         failed = len(self.failed_images)
         converted = total_images - failed
-        self.output_label.show()
         self.output_label.set_text(f"Converted {converted} of {total_images} images.")
         if failed > 0:
             error_message = "\n".join(self.failed_images)

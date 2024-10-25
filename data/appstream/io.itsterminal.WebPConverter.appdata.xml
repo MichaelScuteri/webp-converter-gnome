@@ -45,10 +45,11 @@
   <releases>
     <release version="1.0.5" date="2024-10-20">
         <description type="html">
+          <p>UI Update:</p>
             <ul>
-              <li>Allow more photos to be added once initial photos have been added (without losing current selection)</li>
-              <li>The 'Select Images' button no longer hides after initial selection</li>
-              <li>Added Adawaita support (App now respects system preference)</li>
+              <li>Startup screen added</li>
+              <li>Convert button displays blue when images are selected and can be converted</li>
+              <li>Progress bar only appears when conversion has started</li>
               <li>New screenshots to reflect changes</li>
             </ul>
         </description>
