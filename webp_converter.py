@@ -69,7 +69,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         button_box.set_vexpand(False)  
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename="/app/share/icons/hicolor/scalable/apps/io.itsterminal.WebPConverter.svg", 
+            filename="data/icons/io.itsterminal.WebPConverter.svg", 
             width=100, height=100, 
             preserve_aspect_ratio=True
         )
@@ -116,6 +116,8 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         main_vbox.set_valign(Gtk.Align.CENTER) 
         main_vbox.set_halign(Gtk.Align.CENTER) 
         main_vbox.set_margin_top(20)
+        main_vbox.set_margin_start(20)
+        main_vbox.set_margin_end(20)
         main_vbox.set_margin_bottom(20)
 
         #group 1: select images and cancel selection
