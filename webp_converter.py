@@ -65,7 +65,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         button_box.set_vexpand(False)  
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename="/app/share/icons/hicolor/scalable/apps/io.itsterminal.WebPConverter.svg", 
+            filename="data/icons/io.itsterminal.WebPConverter.svg", 
             width=100, height=100, 
             preserve_aspect_ratio=True
         )
@@ -147,12 +147,20 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         images_group.append(button_box)
         
         #label for selected images
+        scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.set_min_content_height(50)  
+        scrolled_window.set_max_content_height(100)  
+        scrolled_window.set_margin_top(10)
+        scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+
+        # Label for selected images, now added to scrolled window
         self.selected_images_label = Gtk.Label(label="No images selected.")
-        self.selected_images_label.set_xalign(0.5)  # Center align the text
+        self.selected_images_label.set_xalign(0.5)  
         self.selected_images_label.set_wrap(True)
         self.selected_images_label.set_max_width_chars(50)
-        self.selected_images_label.set_margin_top(5)
-        images_group.append(self.selected_images_label)
+        scrolled_window.set_child(self.selected_images_label)  
+
+        images_group.append(scrolled_window)
 
         main_vbox.append(images_group)
 
