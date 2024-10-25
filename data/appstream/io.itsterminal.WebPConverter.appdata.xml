@@ -34,16 +34,20 @@
   <url type="vcs-browser">https://github.com/MichaelScuteri/webp-converter-gnome</url>
   <screenshots>
     <screenshot type="default">
-        <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/6d8a9891a4507c6d6c798e8dbd65268440e54321/screenshots/webp-converter.png</image>
+        <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/d5d2f7411967bf35e6d8aceb92931eb8cb676b81/screenshots/main-view-light.png</image>
         <caption>Main view light mode</caption>
     </screenshot>
     <screenshot>
-        <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/6d8a9891a4507c6d6c798e8dbd65268440e54321/screenshots/webp-converter-dark.png</image>
+        <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/d5d2f7411967bf35e6d8aceb92931eb8cb676b81/screenshots/main-view-dark.png</image>
         <caption>Main view dark mode</caption>
+    </screenshot>
+    <screenshot>
+        <image>https://github.com/MichaelScuteri/webp-converter-gnome/blob/d5d2f7411967bf35e6d8aceb92931eb8cb676b81/screenshots/start-screen-light.png</image>
+        <caption>Start view</caption>
     </screenshot>
   </screenshots>
   <releases>
-    <release version="1.0.5" date="2024-10-20">
+    <release version="1.0.6" date="2024-10-20">
         <description type="html">
           <p>UI Update:</p>
             <ul>
