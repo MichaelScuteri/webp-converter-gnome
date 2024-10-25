@@ -65,7 +65,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         button_box.set_vexpand(False)  
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename="data/icons/io.itsterminal.WebPConverter.svg", 
+            filename="/app/share/icons/hicolor/scalable/apps/io.itsterminal.WebPConverter.svg", 
             width=100, height=100, 
             preserve_aspect_ratio=True
         )
