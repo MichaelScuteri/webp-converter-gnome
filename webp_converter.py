@@ -24,7 +24,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         css = b"""
         .button {
-            background-color: #3584E4;
+            background: #3584E4;
             border-radius: 16px;
             color: white;
         }   

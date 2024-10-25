@@ -39,13 +39,13 @@ To build and install the app locally from source, follow these steps:
     ```
 3. **Build the flatpak app:**
     ```bash
-    flatpak-builder --user --install --force-clean build-dir com.example.WebPConverter.json
+    flatpak-builder --user --install --force-clean build-dir io.itsterminal.WebPConverter.json
     ```
     - This will create a build-dir directory for the build process
     - Build and install the app for the current user. If you want it installed system wide remove the ```--user``` flag.
     - ```--force-clean``` can be used if you are having trouble and need to build multiple times.
 4. **Run the app:**
     ```bash
-    flatpak run com.example.WebPConverter
+    flatpak run io.itsterminal.WebPConverter
     ```
     Additionally a new app icon should appear in your applications menu.
