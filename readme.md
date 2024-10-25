@@ -7,7 +7,7 @@ An easy and quick tool with a simple Linux GUI to convert images of various form
 - Easily select your output directory
 
 <p align="center">
-    <img src="screenshots/webp-converter.png" height="400">
+    <img src="screenshots/main-view-light.png" height="400">
 </p>
 
 ## Non-Flatpak Use (python only)
