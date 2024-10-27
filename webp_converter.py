@@ -33,6 +33,11 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             font-size: 24px;
             font-weight: 800;
         }
+
+        .selected-images {
+            border: 1px solid;
+            border-radius: 5px;
+        }
         """
 
         css_provider = Gtk.CssProvider()
@@ -152,6 +157,8 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         scrolled_window.set_max_content_height(100)  
         scrolled_window.set_margin_top(10)
         scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scrolled_window.get_style_context().add_class("selected-images")
+
 
         # Label for selected images, now added to scrolled window
         self.selected_images_label = Gtk.Label(label="No images selected.")
