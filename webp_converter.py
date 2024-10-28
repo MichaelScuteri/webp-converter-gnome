@@ -410,7 +410,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         global image_sizes
 
         for index, image in enumerate(images):
-            input_file = image
+            input_file = image  
             input_size = os.stat(input_file).st_size / (1024 * 1024)
             original_size = f"{round(input_size, 2)}MB"
 
