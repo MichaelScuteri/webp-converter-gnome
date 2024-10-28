@@ -6,12 +6,13 @@ import sys
 import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
-from gi.repository import Gtk, GLib, Adw, Gdk, GdkPixbuf
+from gi.repository import Gtk, GLib, Adw, Gdk, GdkPixbuf, GObject, Gio
 import threading
 
 extensions = (".png", ".jpg", ".jpeg", ".tiff")
 
 selected_images = []
+image_sizes = {}
 
 libwebp = "cwebp"  
 
@@ -19,8 +20,36 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
         super().__init__(application=app)
         self.set_title("WebP Converter")
-        self.set_default_size(380, 500)
+        self.set_default_size(360, 500)
         self.set_resizable(True)
+
+        header_bar = Gtk.HeaderBar()
+        header_bar.set_show_title_buttons(True)
+        self.set_titlebar(header_bar)
+
+        #stats icon load
+        self.stats_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename="data/icons/stats.svg",
+            width=24, height=24,  
+            preserve_aspect_ratio=True
+        )
+        self.stats_image = Gtk.Image.new_from_pixbuf(self.stats_pixbuf)
+        self.stats_image.set_size_request(24, 24)
+
+        #back icon load
+        self.back_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename="data/icons/back.svg",
+            width=24, height=24,  
+            preserve_aspect_ratio=True
+        )
+        self.back_image = Gtk.Image.new_from_pixbuf(self.back_pixbuf)
+        self.back_image.set_size_request(24, 24)
+
+        self.stats_button = Gtk.Button()
+        self.stats_button.set_child(self.stats_image)
+        self.stats_button.connect("clicked", self.on_stats_button_clicked)
+        header_bar.pack_start(self.stats_button)
+        self.stats_button.hide() 
 
         css = b"""
         .button {
@@ -36,7 +65,8 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         .selected-images {
             border: 1px solid;
-            border-radius: 5px;
+            border-radius: 10px;
+            padding: 5px;
         }
         """
 
@@ -50,6 +80,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         self.add_splash_screen()
         self.add_main_view()
+        self.add_stats_view()
 
         self.stack.set_visible_child_name("splash_screen")
 
@@ -99,8 +130,26 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         parent_box.append(splash_box)
         parent_box.append(button_box)
 
-        # Add parent_box to the stack
         self.stack.add_named(parent_box, "splash_screen")
+    
+    def add_stats_view(self):
+        stats_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        stats_vbox.set_valign(Gtk.Align.CENTER) 
+        stats_vbox.set_halign(Gtk.Align.CENTER) 
+        stats_vbox.set_margin_top(20)
+        stats_vbox.set_margin_start(25)
+        stats_vbox.set_margin_end(25)
+        stats_vbox.set_margin_bottom(20)
+
+        self.stack.add_named(stats_vbox, "stats_view")
+
+    def on_stats_button_clicked(self, widget):
+        if self.stack.get_visible_child_name() == "main_view":
+            self.stack.set_visible_child_name("stats_view")
+            self.stats_button.set_child(self.back_image)
+        else:
+            self.stack.set_visible_child_name("main_view")
+            self.stats_button.set_child(self.stats_image)
 
     def add_main_view(self):
         try:
@@ -160,7 +209,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         scrolled_window.get_style_context().add_class("selected-images")
 
 
-        # Label for selected images, now added to scrolled window
+        # Label for selected images
         self.selected_images_label = Gtk.Label(label="No images selected.")
         self.selected_images_label.set_xalign(0.5)  
         self.selected_images_label.set_wrap(True)
@@ -197,14 +246,12 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         #group 3: image Quality
         quality_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         quality_group.set_hexpand(True)
-        quality_group.set_margin_start(25)
-        quality_group.set_margin_end(25)
 
 
         #label for image quality
         self.label = Gtk.Label(label="Select Image Quality (1-100):")
         self.label.set_xalign(0.5)
-        self.label.set_margin_top(20)
+        self.label.set_margin_top(15)
         quality_group.append(self.label)
 
         #quality input
@@ -283,6 +330,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
     def on_file_dialog_response(self, dialog, response):
         self.stack.set_visible_child_name("main_view")
+        self.stats_button.show()
         if response == Gtk.ResponseType.ACCEPT:
             files = dialog.get_files()
             new_selected_files = [f.get_path() for f in files]
@@ -310,6 +358,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         selected_images = [] 
         self.selected_images_label.set_text("No images selected.")
         self.button.get_style_context().remove_class("button")
+        self.cancel_button.hide()
         self.button.set_sensitive(False)
         self.progress_bar.set_opacity(0)
         self.progress_bar.set_fraction(0.0)
@@ -358,17 +407,27 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
     def convert_images(self, images, quality, output_dir):
         total_images = len(images)
+        global image_sizes
+
         for index, image in enumerate(images):
             input_file = image
+            input_size = os.stat(input_file).st_size / (1024 * 1024)
+            original_size = f"{round(input_size, 2)}MB"
+
             image_name = os.path.basename(image)
             output_file = os.path.join(output_dir, os.path.splitext(image_name)[0] + ".webp")
+
             try:
                 result = subprocess.call(
                     [libwebp, "-quiet", "-q", quality, input_file, "-o", output_file],
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL
                 )
-                if result != 0:
+                if result == 0 and os.path.exists(output_file):
+                    converted_size_mb = os.stat(output_file).st_size / (1024 * 1024)
+                    converted_size = f"{round(converted_size_mb, 2)}MB"
+                    image_sizes[image_name] = (original_size, converted_size)
+                else:
                     self.failed_images.append(image_name)
             except Exception as e:
                 print(e)
@@ -377,6 +436,9 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             GLib.idle_add(self.progress_bar.set_fraction, fraction)
             GLib.idle_add(self.progress_bar.set_text, f"Converting... {int(fraction * 100)}%")
         GLib.idle_add(self.conversion_complete)
+
+        self.image_sizes = image_sizes
+        print(image_sizes)
 
     def conversion_complete(self):
         total_images = len(selected_images)
