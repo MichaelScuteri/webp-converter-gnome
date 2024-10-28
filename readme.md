@@ -2,12 +2,10 @@
     <img src="data/icons/io.itsterminal.WebPConverter.svg" height="100">
 </p>
 
-<center>
-
-## WebP Converter
-The fastest way to convert to WebP
+<h2 align="center"> WebP Converter</h2>
+<p align="center">The fastest way to convert to WebP</p>
 <hr>
-</center>
+
 An easy and quick tool with a simple Linux GUI to convert images of various format to .webp. This tool was designed for web developers to have a fast an easy way to convert images locally for faster web loading of images. It is available on [Flathub](https://flathub.org/apps/io.itsterminal.WebPConverter) as a Flatpak.
 
 ## Features
