@@ -9,7 +9,7 @@ gi.require_version('Adw', '1')
 from gi.repository import Gtk, GLib, Adw, Gdk, GdkPixbuf, GObject, Gio
 import threading
 
-extensions = (".png", ".jpg", ".jpeg", ".tiff")
+extensions = (".png", ".jpg", ".jpeg", ".tiff", ".webp")
 
 selected_images = []
 image_sizes = {}
@@ -67,6 +67,23 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             border: 1px solid;
             border-radius: 10px;
             padding: 5px;
+        }
+
+        .image-box {
+            border: 1px solid #CCCCCC;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .group-title {
+            font-weight: bold;
+            font-size: 18px;
+            padding-bottom: 5px;
+        }
+
+        .image-frame {
+            padding: 5px;
+            border: none;
         }
         """
 
@@ -133,15 +150,56 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.stack.add_named(parent_box, "splash_screen")
     
     def add_stats_view(self):
-        stats_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
-        stats_vbox.set_valign(Gtk.Align.CENTER) 
-        stats_vbox.set_halign(Gtk.Align.CENTER) 
-        stats_vbox.set_margin_top(20)
-        stats_vbox.set_margin_start(25)
-        stats_vbox.set_margin_end(25)
-        stats_vbox.set_margin_bottom(20)
+        self.stats_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        self.stats_vbox.set_valign(Gtk.Align.START)
+        self.stats_vbox.set_halign(Gtk.Align.CENTER)
+        self.stats_vbox.set_margin_top(20)
+        self.stats_vbox.set_margin_start(10)
+        self.stats_vbox.set_margin_end(10)
+        self.stats_vbox.set_margin_bottom(20)
 
-        self.stack.add_named(stats_vbox, "stats_view")
+        #conversion box
+        self.image_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        self.image_box.get_style_context().add_class("image-box")
+
+        #conversion box title
+        group_title = Gtk.Label(label="Conversion Statistics")
+        group_title.get_style_context().add_class("group-title")
+        group_title.set_halign(Gtk.Align.CENTER)
+        self.image_box.append(group_title)
+
+        self.no_images_label = Gtk.Label(label="No images converted")
+
+        self.stats_vbox.append(self.image_box)
+
+        self.stack.add_named(self.stats_vbox, "stats_view")
+        self.update_stats_view()
+
+    def update_stats_view(self):
+        for child in list(self.image_box):
+            if child != self.image_box.get_first_child():
+                self.image_box.remove(child)
+
+        if hasattr(self, 'image_sizes') and self.image_sizes:
+            if self.no_images_label.get_parent():
+                self.image_box.remove(self.no_images_label)
+
+            for index, (image_name, (original_size, converted_size)) in enumerate(self.image_sizes.items()):
+                image_frame = Gtk.Frame()
+                image_frame.get_style_context().add_class("image-frame")
+
+                stats_text = f"{image_name}: {original_size} ➔ {converted_size}"
+                frame_content = Gtk.Label(label=stats_text)
+                frame_content.set_justify(Gtk.Justification.CENTER)
+                image_frame.set_child(frame_content)
+
+                self.image_box.append(image_frame)
+
+                if index < len(self.image_sizes) - 1:
+                    separator = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+                    self.image_box.append(separator)
+        else:
+            self.image_box.append(self.no_images_label)
 
     def on_stats_button_clicked(self, widget):
         if self.stack.get_visible_child_name() == "main_view":
@@ -208,6 +266,10 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scrolled_window.get_style_context().add_class("selected-images")
 
+        #drag and drop
+        drop_target_main = Gtk.DropTarget.new(type=Gdk.FileList, actions=Gdk.DragAction.COPY)
+        drop_target_main.connect('drop', self.on_dnd_drop)
+        scrolled_window.add_controller(drop_target_main)
 
         # Label for selected images
         self.selected_images_label = Gtk.Label(label="No images selected.")
@@ -352,6 +414,23 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
                 self.cancel_button.hide()
         dialog.destroy()
         self.dialog = None
+    
+    def on_dnd_drop(self, drop_target, file_list, x, y):
+        global selected_images
+        if isinstance(file_list, Gdk.FileList):
+            new_files = []
+            for gfile in file_list.get_files():
+                file_path = gfile.get_path()
+                if file_path and file_path.endswith(extensions):
+                    selected_images.append(file_path)
+                    new_files.append(os.path.basename(file_path))
+
+            if new_files:
+                filenames_text = ", ".join([os.path.basename(f) for f in selected_images])
+                self.selected_images_label.set_text(filenames_text)
+                self.cancel_button.show()
+                self.button.set_sensitive(True)
+        return True
 
     def on_cancel_clicked(self, widget):
         global selected_images
@@ -445,6 +524,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         failed = len(self.failed_images)
         converted = total_images - failed
         self.output_label.set_text(f"Converted {converted} of {total_images} images.")
+
         if failed > 0:
             error_message = "\n".join(self.failed_images)
             dialog = Gtk.MessageDialog(
@@ -459,6 +539,8 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             dialog.show()
         self.progress_bar.set_fraction(1.0)
         self.progress_bar.set_text("Conversion complete.")
+
+        GLib.idle_add(self.update_stats_view)
 
 class WebPConverterApp(Adw.Application):
     def __init__(self):
