@@ -6,7 +6,7 @@ import sys
 import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
-from gi.repository import Gtk, GLib, Adw, Gdk, GdkPixbuf, GObject, Gio
+from gi.repository import Gtk, GLib, Adw, Gdk, GdkPixbuf
 import threading
 
 extensions = (".png", ".jpg", ".jpeg", ".tiff", ".webp")
@@ -170,13 +170,20 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.image_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         self.image_box.get_style_context().add_class("image-box")
 
+        self.image_scrolled_window = Gtk.ScrolledWindow()
+        self.image_scrolled_window.set_min_content_width(300)  
+        self.image_scrolled_window.set_min_content_height(400)  
+        self.image_scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC) 
+        self.image_scrolled_window.set_child(self.image_box) 
+
         #total savings box
         self.total_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         self.total_box.set_margin_top(10)
 
-        self.no_images_label = Gtk.Label(label="No statistics to display. Convert images")
+        self.no_images_label = Gtk.Label(label="Convert images to display statistics")
+        self.total_savings_label = Gtk.Label()
 
-        self.stats_vbox.append(self.image_box)
+        self.stats_vbox.append(self.image_scrolled_window)
         self.stats_vbox.append(self.total_box)
 
         self.stack.add_named(self.stats_vbox, "stats_view")
@@ -186,8 +193,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         total_savings = 0.0
 
         for child in list(self.image_box):
-            if child != self.image_box.get_first_child():
-                self.image_box.remove(child)
+            self.image_box.remove(child)
 
         if hasattr(self, 'image_sizes') and self.image_sizes:
             if self.no_images_label.get_parent():
@@ -199,23 +205,35 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
                 savings = original_size_mb - converted_size_mb
                 total_savings += savings
 
-                image_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
-                image_box.get_style_context().add_class("image-box-content")
+                MAX_CHAR_LENGTH = 25
 
-                stats_text = f"{image_name}: {original_size} ➝ {converted_size}"
-                frame_content = Gtk.Label(label=stats_text)
-                frame_content.set_justify(Gtk.Justification.CENTER)
-                frame_content.set_valign(Gtk.Align.CENTER)
-                frame_content.set_halign(Gtk.Align.CENTER)
-                image_box.append(frame_content)
+                if len(image_name) > MAX_CHAR_LENGTH:
+                    truncated_image_name = image_name[:MAX_CHAR_LENGTH - 3] + "..."  
+                else:
+                    truncated_image_name = image_name
 
-                self.image_box.append(image_box)
+                image_stats_line = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+
+                image_name_label = Gtk.Label(label=truncated_image_name)
+                image_name_label.set_halign(Gtk.Align.START)
+
+                size_text = f"{original_size} ➝ {converted_size}"
+                size_label = Gtk.Label(label=size_text)
+                size_label.set_halign(Gtk.Align.END)
+
+                spacer = Gtk.Box()
+                spacer.set_hexpand(True)
+
+                image_stats_line.append(image_name_label)
+                image_stats_line.append(size_label)
+
+                self.image_box.append(image_stats_line)
 
                 if index < len(self.image_sizes) - 1:
                     separator = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
                     self.image_box.append(separator)
 
-            self.total_savings_label.set_text(f"Total Savings: {round(total_savings, 2)} MB")
+            self.total_savings_label.set_text(f"Total Reduction: {round(total_savings, 2)} MB")
             if self.total_savings_label.get_parent() is None:
                 self.total_box.append(self.total_savings_label)
 
@@ -483,6 +501,8 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.quality_label.set_text(f"Current Quality: {current_value}")
 
     def on_convert_clicked(self, widget):
+        self.image_sizes = {}
+
         quality = str(int(self.scale.get_value()))
         output_dir = self.output_dir
         if not os.path.exists(output_dir):
@@ -496,6 +516,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             self.progress_bar.set_fraction(0.0)
             self.progress_bar.set_text("Starting conversion...")
             self.output_label.set_text("")
+            self.update_stats_view()
             threading.Thread(target=self.convert_images, args=(selected_images.copy(), quality, output_dir)).start()
 
     def convert_images(self, images, quality, output_dir):
