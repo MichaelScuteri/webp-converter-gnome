@@ -27,6 +27,8 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         header_bar.set_show_title_buttons(True)
         self.set_titlebar(header_bar)
 
+        self.total_savings_label = Gtk.Label()
+
         #stats icon load
         self.stats_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
             filename="data/icons/stats.svg",
@@ -72,7 +74,6 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         .image-box {
             border: 1px solid #CCCCCC;
             border-radius: 8px;
-            padding: 10px;
         }
 
         .group-title {
@@ -81,9 +82,16 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
             padding-bottom: 5px;
         }
 
-        .image-frame {
+        .total-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .image-box-content {
+            border-radius: 8px;
             padding: 5px;
-            border: none;
+            padding-left: 10px;
+            padding-right: 10px;
         }
         """
 
@@ -151,7 +159,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
     
     def add_stats_view(self):
         self.stats_vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
-        self.stats_vbox.set_valign(Gtk.Align.START)
+        self.stats_vbox.set_valign(Gtk.Align.CENTER)
         self.stats_vbox.set_halign(Gtk.Align.CENTER)
         self.stats_vbox.set_margin_top(20)
         self.stats_vbox.set_margin_start(10)
@@ -162,20 +170,21 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.image_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         self.image_box.get_style_context().add_class("image-box")
 
-        #conversion box title
-        group_title = Gtk.Label(label="Conversion Statistics")
-        group_title.get_style_context().add_class("group-title")
-        group_title.set_halign(Gtk.Align.CENTER)
-        self.image_box.append(group_title)
+        #total savings box
+        self.total_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        self.total_box.set_margin_top(10)
 
-        self.no_images_label = Gtk.Label(label="No images converted")
+        self.no_images_label = Gtk.Label(label="No statistics to display. Convert images")
 
         self.stats_vbox.append(self.image_box)
+        self.stats_vbox.append(self.total_box)
 
         self.stack.add_named(self.stats_vbox, "stats_view")
         self.update_stats_view()
 
     def update_stats_view(self):
+        total_savings = 0.0
+
         for child in list(self.image_box):
             if child != self.image_box.get_first_child():
                 self.image_box.remove(child)
@@ -185,19 +194,31 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
                 self.image_box.remove(self.no_images_label)
 
             for index, (image_name, (original_size, converted_size)) in enumerate(self.image_sizes.items()):
-                image_frame = Gtk.Frame()
-                image_frame.get_style_context().add_class("image-frame")
+                original_size_mb = float(original_size.replace("MB", ""))
+                converted_size_mb = float(converted_size.replace("MB", ""))
+                savings = original_size_mb - converted_size_mb
+                total_savings += savings
 
-                stats_text = f"{image_name}: {original_size} ➔ {converted_size}"
+                image_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+                image_box.get_style_context().add_class("image-box-content")
+
+                stats_text = f"{image_name}: {original_size} ➝ {converted_size}"
                 frame_content = Gtk.Label(label=stats_text)
                 frame_content.set_justify(Gtk.Justification.CENTER)
-                image_frame.set_child(frame_content)
+                frame_content.set_valign(Gtk.Align.CENTER)
+                frame_content.set_halign(Gtk.Align.CENTER)
+                image_box.append(frame_content)
 
-                self.image_box.append(image_frame)
+                self.image_box.append(image_box)
 
                 if index < len(self.image_sizes) - 1:
                     separator = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
                     self.image_box.append(separator)
+
+            self.total_savings_label.set_text(f"Total Savings: {round(total_savings, 2)} MB")
+            if self.total_savings_label.get_parent() is None:
+                self.total_box.append(self.total_savings_label)
+
         else:
             self.image_box.append(self.no_images_label)
 
@@ -262,7 +283,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         scrolled_window = Gtk.ScrolledWindow()
         scrolled_window.set_min_content_height(50)  
         scrolled_window.set_max_content_height(100)  
-        scrolled_window.set_margin_top(10)
+        scrolled_window.set_margin_top(20)
         scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         scrolled_window.get_style_context().add_class("selected-images")
 
@@ -309,13 +330,6 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         quality_group = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         quality_group.set_hexpand(True)
 
-
-        #label for image quality
-        self.label = Gtk.Label(label="Select Image Quality (1-100):")
-        self.label.set_xalign(0.5)
-        self.label.set_margin_top(15)
-        quality_group.append(self.label)
-
         #quality input
         self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 100, 1)
         self.scale.set_value(75)
@@ -326,7 +340,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         quality_group.append(self.scale)
 
         #label for current quality
-        self.quality_label = Gtk.Label(label=f"Current Quality: {int(self.scale.get_value())}")
+        self.quality_label = Gtk.Label(label=f"Compression Quality: {int(self.scale.get_value())}")
         self.quality_label.set_xalign(0.5)
         quality_group.append(self.quality_label)
 
@@ -348,7 +362,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
         self.button.set_sensitive(False) 
         convert_group.append(self.button)
 
-        #progress bar (set opacity to 0 to hide but keep space)
+        #progress bar
         self.progress_bar = Gtk.ProgressBar()
         self.progress_bar.set_hexpand(True)
         self.progress_bar.set_vexpand(False)
@@ -361,7 +375,7 @@ class WebPConverterWindow(Gtk.ApplicationWindow):
 
         main_vbox.append(convert_group)
 
-        #output label (keep it empty but visible initially)
+        #output label
         self.output_label = Gtk.Label(label="")
         self.output_label.set_xalign(0.5)
         self.output_label.set_margin_top(0)
