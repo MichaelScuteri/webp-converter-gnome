@@ -21,7 +21,7 @@ An easy and quick tool with a simple Linux GUI to convert images of various form
 
 ## Official Release v1.0.6
 <a href="https://flathub.org/apps/io.itsterminal.WebPConverter">
-    <img src="https://camo.githubusercontent.com/dc4f45577e4e438ed5739f39d5050f91a4ad01a42d5ef9cd71970cef836e16d1/68747470733a2f2f666c61746875622e6f72672f6170692f62616467653f737667266c6f63616c653d656e">
+    <img width='240' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/>
 </a>
 
 ## Non-Flatpak Use (python only)
