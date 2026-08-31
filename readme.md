@@ -12,9 +12,11 @@ An easy and quick tool with a simple Linux GUI to convert images of various form
 - Convert as many images as you like at once
 - Set the qaulity level of the compression with an easy slider
 - Easily select your output directory
+- View compression reduction statistics
 
-<p align="center">
-    <img src="screenshots/main-view-light.png" height="400">
+<p align="center" style="display: flex;">
+    <img src="screenshots/main-view-dark.png" height="400">
+    <img src="screenshots/stats-view-dark.png" height="400">
 </p>
 
 ## Official Release v1.0.6
