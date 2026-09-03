@@ -34,26 +34,21 @@
   <url type="vcs-browser">https://github.com/MichaelScuteri/webp-converter-gnome</url>
   <screenshots>
     <screenshot type="default">
-        <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/d5d2f7411967bf35e6d8aceb92931eb8cb676b81/screenshots/main-view-light.png</image>
-        <caption>Main view light mode</caption>
+        <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/f8f5f400068f909faa5d7fe9f84178296aa0e432/screenshots/main-view-dark.png</image>
+        <caption>Main view</caption>
     </screenshot>
     <screenshot>
-        <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/d5d2f7411967bf35e6d8aceb92931eb8cb676b81/screenshots/main-view-dark.png</image>
-        <caption>Main view dark mode</caption>
-    </screenshot>
-    <screenshot>
-        <image>https://github.com/MichaelScuteri/webp-converter-gnome/blob/d5d2f7411967bf35e6d8aceb92931eb8cb676b81/screenshots/start-screen-light.png</image>
-        <caption>Start view</caption>
+        <image>https://raw.githubusercontent.com/MichaelScuteri/webp-converter-gnome/f8f5f400068f909faa5d7fe9f84178296aa0e432/screenshots/stats-view-dark.png</image>
+        <caption>Statistics View</caption>
     </screenshot>
   </screenshots>
   <releases>
-    <release version="1.0.6" date="2024-10-20">
+    <release version="1.0.7" date="2026-09-03">
         <description type="html">
-          <p>UI Update:</p>
+          <p>Features:</p>
             <ul>
-              <li>Startup screen added</li>
-              <li>Convert button displays blue when images are selected and can be converted</li>
-              <li>Progress bar only appears when conversion has started</li>
+              <li>Statistics view: view data on images like how much space was saved</li>
+              <li>Image input is now scrollable and allows for drag and drop</li>
               <li>New screenshots to reflect changes</li>
             </ul>
         </description>
